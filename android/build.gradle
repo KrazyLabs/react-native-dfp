@@ -32,5 +32,6 @@ repositories {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile 'com.google.android.gms:play-services-ads:10.2.1'
+    implementation project(':DTBAndroidSDK')
+    api 'com.google.android.gms:play-services-ads:15.0.1'
 }

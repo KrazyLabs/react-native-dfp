@@ -1,6 +1,6 @@
 import React from 'react';
-import {
-  requireNativeComponent,
+import { 
+  requireNativeComponent, 
   View,
 } from 'react-native';
 import PropTypes from 'proptypes';
@@ -8,22 +8,35 @@ import PropTypes from 'proptypes';
 const RNBanner = requireNativeComponent('RNDFPBanner', DFPBanner);
 
 export default class DFPBanner extends React.Component {
+  state = {
+    style: {}
+  };
 
-  constructor() {
-    super();
-    this.onSizeChange = this.onSizeChange.bind(this);
-    this.state = {
-      style: {},
-    };
-  }
-
-  onSizeChange(event) {
-    const { height, width } = event.nativeEvent;
+  onSizeChange = ({ nativeEvent }) => {
+    const { height, width } = nativeEvent;
     this.setState({ style: { width, height } });
-  }
+  };
+
+  admobDispatchAppEvent = event => {
+    if (this.props.admobDispatchAppEvent) {
+      this.props.admobDispatchAppEvent(event);
+    }
+  };
+
+  didFailToReceiveAdWithError = ({ nativeEvent }) => {
+    if (this.props.didFailToReceiveAdWithError) {
+      this.props.didFailToReceiveAdWithError(nativeEvent.error);
+    }
+  };
 
   render() {
-    const { adUnitID, testDeviceID, dimensions, style, didFailToReceiveAdWithError, admobDispatchAppEvent } = this.props;
+    const {
+      adUnitID,
+      testDeviceID,
+      dimensions,
+      customTargeting,
+      style
+    } = this.props;
     let { bannerSize, adSizes } = this.props;
 
     // Dimensions gets highest priority
@@ -43,22 +56,24 @@ export default class DFPBanner extends React.Component {
     }
 
     return (
-      <View style={this.props.style}>
+      <View style={style}>
         <RNBanner
+          bannerSize={bannerSize}
           style={this.state.style}
-          onSizeChange={this.onSizeChange.bind(this)}
+          onSizeChange={this.onSizeChange}
           onAdViewDidReceiveAd={this.props.adViewDidReceiveAd}
-          onDidFailToReceiveAdWithError={(event) => didFailToReceiveAdWithError(event.nativeEvent.error)}
+          onDidFailToReceiveAdWithError={this.didFailToReceiveAdWithError}
           onAdViewWillPresentScreen={this.props.adViewWillPresentScreen}
           onAdViewWillDismissScreen={this.props.adViewWillDismissScreen}
           onAdViewDidDismissScreen={this.props.adViewDidDismissScreen}
           onAdViewWillLeaveApplication={this.props.adViewWillLeaveApplication}
-          onAdmobDispatchAppEvent={(event) => admobDispatchAppEvent(event)}
+          onAdmobDispatchAppEvent={this.admobDispatchAppEvent}
           adSizes={adSizes}
           dimensions={dimensions}
           testDeviceID={testDeviceID}
           adUnitID={adUnitID}
-          bannerSize={bannerSize} />
+          customTargeting={customTargeting}
+        />
       </View>
     );
   }
@@ -81,6 +96,16 @@ DFPBanner.propTypes = {
    * banner is default
    */
   bannerSize: PropTypes.string,
+
+  /**
+   * Custom targeting to add to the dfp request
+   */
+  customTargeting: PropTypes.shape({
+    amzn_b: PropTypes.string,
+    amzn_h: PropTypes.string,
+    amznp: PropTypes.string,
+    amznslots: PropTypes.string
+  }),
 
   /**
    * Custom banner size (instead of using bannerSize)
