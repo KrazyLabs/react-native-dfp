@@ -25,7 +25,7 @@ Unofficial fork from Simon Bugert's [react-native-admob](https://github.com/sbug
 #### Android
 
 1. Open up `android/app/src/main/java/[...]/MainActivity.java`
-  - Add `import com.reactlibrary.RNDfpPackage;` to the imports at the top of the file
+  - Add `import com.krazylabs.rnnativedfp.RNDfpPackage;` to the imports at the top of the file
   - Add `new RNDfpPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
   	```
@@ -42,7 +42,7 @@ Unofficial fork from Simon Bugert's [react-native-admob](https://github.com/sbug
 
 1. In Visual Studio add the `RNDfp.sln` in `node_modules/react-native-dfp/windows/RNDfp.sln` folder to their solution, reference from their app.
 2. Open up your `MainPage.cs` app
-  - Add `using Com.Reactlibrary.RNDfp;` to the usings at the top of the file
+  - Add `using com.krazylabs.rnnativedfp.RNDfp;` to the usings at the top of the file
   - Add `new RNDfpPackage()` to the `List<IReactPackage>` returned by the `Packages` method
 
 
@@ -67,6 +67,7 @@ import { RNBanner } from 'react-native-dfp';
   testDeviceID={testDeviceID}
   adUnitID={adUnitID}
   dimensions={dimensions}
+  customTargeting={customTargeting}
   bannerSize={bannerSize} />
 
 ```
@@ -87,6 +88,16 @@ import { RNBanner } from 'react-native-dfp';
  * banner is default
  */
 bannerSize: React.PropTypes.string,
+
+/**
+  * Custom targeting from Amazon APS (a9 TAM) to add to the dfp request
+  */
+customTargeting: PropTypes.shape({
+  amzn_b: PropTypes.string,
+  amzn_h: PropTypes.string,
+  amznp: PropTypes.string,
+  amznslots: PropTypes.string
+}),
 
 /**
  * Custom banner size (instead of using bannerSize)
