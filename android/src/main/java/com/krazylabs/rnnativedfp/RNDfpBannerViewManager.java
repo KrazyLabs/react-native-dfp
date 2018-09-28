@@ -41,7 +41,7 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
   public static final String CUSTOM_TARGETING_AMZN_H = "amzn_h";
   public static final String CUSTOM_TARGETING_AMZNP = "amznp";
   public static final String CUSTOM_TARGETING_AMZNSLOTS = "amznslots";
-  
+
   public static final String WIDTH = "width";
   public static final String HEIGHT = "height";
 
@@ -190,8 +190,8 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
           if (dimensions.containsKey(WIDTH) && dimensions.containsKey(HEIGHT)) {
 
             AdSize adSize = new AdSize(
-                    (int) Double.parseDouble(dimensions.get(WIDTH).toString()),
-                    (int) Double.parseDouble(dimensions.get(HEIGHT).toString())
+                    Integer.parseInt(dimensions.get(WIDTH).toString()),
+                    Integer.parseInt(dimensions.get(HEIGHT).toString())
             );
             adSizesArrayList.add(adSize);
           }
@@ -293,7 +293,7 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
       adView.setAdSizes(adSizes);
     }
 
-    if (adView.getAdSizes() != null && adUnitID != null) {
+    if (adView.getAdSizes() != null && adUnitID != null && customTargeting != null) {
 
       if (adUnitID != adView.getAdUnitId()) {
         adView.setAdUnitId(adUnitID);
@@ -308,15 +308,15 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
         }
       }
 
-      if (customTargeting != null) {
-        ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
+      // Add APS custom targeting
+      ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
 
-        while (iterator.hasNextKey()) {
-          String key = iterator.nextKey();
-          String value = customTargeting.getString(key);
-          adRequestBuilder.addCustomTargeting(key, value);
-        }
+      while (iterator.hasNextKey()) {
+        String key = iterator.nextKey();
+        String value = customTargeting.getString(key);
+        adRequestBuilder.addCustomTargeting(key, value);
       }
+
 
       final PublisherAdRequest adRequest = adRequestBuilder.build();
       adView.loadAd(adRequest);
