@@ -37,6 +37,14 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
   public static final String PROP_TEST_DEVICE_ID = "testDeviceID";
   public static final String PROP_CUSTOM_TARGETING = "customTargeting";
 
+  public static final String CUSTOM_TARGETING_AMZN_B = "amzn_b";
+  public static final String CUSTOM_TARGETING_AMZN_H = "amzn_h";
+  public static final String CUSTOM_TARGETING_AMZNP = "amznp";
+  public static final String CUSTOM_TARGETING_AMZNSLOTS = "amznslots";
+
+  public static final String WIDTH = "width";
+  public static final String HEIGHT = "height";
+
   private String adUnitID = null;
   private AdSize[] adSizes = null;
   private String testDeviceID = null;
@@ -89,7 +97,7 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
     ReactViewGroup view = new ReactViewGroup(themedReactContext);
     attachNewAdView(view);
     return view;
-   }
+  }
 
   int viewID = -1;
   protected void attachNewAdView(final ReactViewGroup view) {
@@ -170,8 +178,8 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
   public void setAdSizes(final ReactViewGroup view, final ReadableArray adSizesProp) {
     if (adSizesProp != null) {
       ArrayList<AdSize> adSizesArrayList = new ArrayList<AdSize>();
-      ReadableNativeArray nativeadSizesArray = (ReadableNativeArray)adSizesProp;
-      for (Object obj : nativeadSizesArray.toArrayList()) {
+      ReadableNativeArray nativeAdSizesArray = (ReadableNativeArray)adSizesProp;
+      for (Object obj : nativeAdSizesArray.toArrayList()) {
         if (obj instanceof String) {
           AdSize adSize = getAdSizeFromString((String)obj);
           adSizesArrayList.add(adSize);
@@ -179,50 +187,49 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
 
         if (obj instanceof HashMap) {
           HashMap dimensions = (HashMap)obj;
-          if (dimensions.containsKey("width") && dimensions.containsKey("height")) {
+          if (dimensions.containsKey(WIDTH) && dimensions.containsKey(HEIGHT)) {
 
             AdSize adSize = new AdSize(
-              (int) Double.parseDouble(dimensions.get("width").toString()),
-              (int) Double.parseDouble(dimensions.get("height").toString())
+                    Integer.parseInt(dimensions.get(WIDTH).toString()),
+                    Integer.parseInt(dimensions.get(HEIGHT).toString())
             );
             adSizesArrayList.add(adSize);
           }
         }
       }
 
-      adSizes = adSizesArrayList.toArray(new AdSize[adSizesArrayList.size()]);
+      this.adSizes = adSizesArrayList.toArray(new AdSize[adSizesArrayList.size()]);
 
       attachNewAdView(view);
-
-      PublisherAdView newAdView = configureAdView(view);
+      PublisherAdView newAdView = (PublisherAdView) view.getChildAt(0);
+      newAdView.setAdSizes(this.adSizes);
 
       // send measurements to js to style the AdView in react
       WritableMap event = Arguments.createMap();
-      event.putDouble("width", newAdView.getAdSize().getWidth());
-      event.putDouble("height", newAdView.getAdSize().getHeight());
+      event.putDouble(WIDTH, newAdView.getAdSize().getWidth());
+      event.putDouble(HEIGHT, newAdView.getAdSize().getHeight());
       mEventEmitter.receiveEvent(view.getId(), Events.EVENT_SIZE_CHANGE.toString(), event);
 
-      loadAd(newAdView);
+      loadAd(view);
     }
   }
 
   @ReactProp(name = PROP_DIMENSIONS)
   public void setDimensions(final ReactViewGroup view, final ReadableMap dimensions) {
-    if (dimensions != null && dimensions.hasKey("width") && !dimensions.isNull("width") && dimensions.hasKey("height") && !dimensions.isNull("height")) {
-      AdSize adSize = new AdSize(dimensions.getInt("width"), dimensions.getInt("height"));
-      adSizes = new AdSize[1];
-      adSizes[0] = adSize;
+    if (dimensions != null && dimensions.hasKey(WIDTH) && !dimensions.isNull(WIDTH) && dimensions.hasKey(HEIGHT) && !dimensions.isNull(HEIGHT)) {
+      AdSize adSize = new AdSize(dimensions.getInt(WIDTH), dimensions.getInt(HEIGHT));
+      this.adSizes = new AdSize[1];
+      this.adSizes[0] = adSize;
 
       attachNewAdView(view);
 
       // send measurements to js to style the AdView in react
       WritableMap event = Arguments.createMap();
-      event.putDouble("width", adSize.getWidth());
-      event.putDouble("height", adSize.getHeight());
+      event.putDouble(WIDTH, adSize.getWidth());
+      event.putDouble(HEIGHT, adSize.getHeight());
       mEventEmitter.receiveEvent(view.getId(), Events.EVENT_SIZE_CHANGE.toString(), event);
 
-      PublisherAdView newAdView = configureAdView(view);
-      loadAd(newAdView);
+      loadAd(view);
     }
   }
 
@@ -230,8 +237,8 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
   public void setBannerSize(final ReactViewGroup view, final String sizeString) {
     if (sizeString != null && !sizeString.isEmpty()) {
       AdSize adSize = getAdSizeFromString(sizeString);
-      adSizes = new AdSize[1];
-      adSizes[0] = adSize;
+      this.adSizes = new AdSize[1];
+      this.adSizes[0] = adSize;
 
       attachNewAdView(view);
 
@@ -247,12 +254,11 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
         width = adSize.getWidth();
         height = adSize.getHeight();
       }
-      event.putDouble("width", width);
-      event.putDouble("height", height);
+      event.putDouble(WIDTH, width);
+      event.putDouble(HEIGHT, height);
       mEventEmitter.receiveEvent(view.getId(), Events.EVENT_SIZE_CHANGE.toString(), event);
 
-      PublisherAdView newAdView = configureAdView(view);
-      loadAd(newAdView);
+      loadAd(view);
     }
   }
 
@@ -260,8 +266,7 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
   public void setAdUnitID(final ReactViewGroup view, final String adUnitID) {
     if (adUnitID != null && this.adUnitID != adUnitID) {
       this.adUnitID = adUnitID;
-      PublisherAdView newAdView = configureAdView(view);
-      loadAd(newAdView);
+      loadAd(view);
     }
   }
 
@@ -269,31 +274,26 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
   public void setPropTestDeviceID(final ReactViewGroup view, final String testDeviceID) {
     if (testDeviceID != null && this.testDeviceID != testDeviceID) {
       this.testDeviceID = testDeviceID;
-      PublisherAdView newAdView = configureAdView(view);
-      loadAd(newAdView);
+      loadAd(view);
     }
   }
 
   @ReactProp(name = PROP_CUSTOM_TARGETING)
   public void setCustomTargeting(final ReactViewGroup view, final ReadableMap customTargeting) {
-    if (customTargeting != null && customTargeting.hasKey("amzn_b") && !customTargeting.isNull("amzn_b") && customTargeting.hasKey("amzn_h") && !customTargeting.isNull("amzn_h") && customTargeting.hasKey("amznp") && !customTargeting.isNull("amznp") && customTargeting.hasKey("amznslots") && !customTargeting.isNull("amznslots")) {
+    if (customTargeting != null && customTargeting.hasKey(CUSTOM_TARGETING_AMZN_B) && !customTargeting.isNull(CUSTOM_TARGETING_AMZN_B) && customTargeting.hasKey(CUSTOM_TARGETING_AMZN_H) && !customTargeting.isNull(CUSTOM_TARGETING_AMZN_H) && customTargeting.hasKey(CUSTOM_TARGETING_AMZNP) && !customTargeting.isNull(CUSTOM_TARGETING_AMZNP) && customTargeting.hasKey(CUSTOM_TARGETING_AMZNSLOTS) && !customTargeting.isNull(CUSTOM_TARGETING_AMZNSLOTS)) {
       this.customTargeting = customTargeting;
-      PublisherAdView newAdView = configureAdView(view);
-      loadAd(newAdView);
+      loadAd(view);
     }
   }
 
-  private PublisherAdView configureAdView(ReactViewGroup view) {
+  private void loadAd(ReactViewGroup view) {
     final PublisherAdView adView = (PublisherAdView) view.getChildAt(0);
-    if (adSizes != null && adUnitID != null) {
-      adView.setAdSizes(adSizes);
-      adView.setAdUnitId(adUnitID);
-    }
-    return adView;
-  }
 
-  private void loadAd(PublisherAdView adView) {
-    if (adView.getAdSizes() != null && adUnitID != null) {
+    if (adSizes != null) {
+      adView.setAdSizes(adSizes);
+    }
+
+    if (adView.getAdSizes() != null && adUnitID != null && customTargeting != null) {
 
       if (adUnitID != adView.getAdUnitId()) {
         adView.setAdUnitId(adUnitID);
@@ -308,15 +308,15 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
         }
       }
 
-      if (customTargeting != null) {
-        ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
+      // Add APS custom targeting
+      ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
 
-        while (iterator.hasNextKey()) {
-          String key = iterator.nextKey();
-          String value = customTargeting.getString(key);
-          adRequestBuilder.addCustomTargeting(key, value);
-        }
+      while (iterator.hasNextKey()) {
+        String key = iterator.nextKey();
+        String value = customTargeting.getString(key);
+        adRequestBuilder.addCustomTargeting(key, value);
       }
+
 
       final PublisherAdRequest adRequest = adRequestBuilder.build();
       adView.loadAd(adRequest);
