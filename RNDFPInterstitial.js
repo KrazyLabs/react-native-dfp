@@ -1,3 +1,65 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, NativeEventEmitter } from 'react-native';
+const { RNDFPInterstitial } = NativeModules
 
-export default NativeModules.RNDFPInterstitial;
+const eventTypes = {
+  onAdLoaded: 'onAdLoaded',
+  onAdOpened: 'onAdOpened',
+  onAdLeftApplication: 'onAdLeftApplication',
+  onAdClosed: 'onAdClosed',
+  onAdFailedToLoad: 'onAdFailedToLoad'
+}
+let subscriptions = [];
+
+const interstitialEventEmitter = new NativeEventEmitter(RNDFPInterstitial);
+
+export default class Interstitial {
+
+  constructor(adUnitId) {
+    this.adUnitId = adUnitId;
+
+    for (let i = 0, len = subscriptions.length; i < len; i++) {
+      subscriptions[i].remove();
+    }
+    subscriptions = [];
+  }
+
+  /**
+   * Load an ad with an instance of AdRequest
+   * @returns {*}
+   */
+  loadAd() {
+    RNDFPInterstitial.loadAdFromAdUnitId(this.adUnitId);
+  }
+
+  /**
+   * Show the advert - will only show if loaded
+   * @returns {*}
+   */
+  show() {
+    RNDFPInterstitial.showAd();
+  }
+
+  /**
+   * Listen to an Ad event
+   * @param eventType
+   * @param listenerCb
+   * @returns {null}
+   */
+  on(eventType, listenerCb) {
+    if (!eventTypes[eventType]) {
+      console.warn(
+        `Invalid event type provided, must be one of: ${Object.keys(
+          eventTypes
+        ).join(', ')}`
+      );
+      return null;
+    }
+
+    const sub = interstitialEventEmitter.addListener(
+      eventType,
+      listenerCb
+    );
+    subscriptions.push(sub);
+    return sub;
+  }
+}
