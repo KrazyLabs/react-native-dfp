@@ -1,4 +1,4 @@
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeModules, NativeEventEmitter, DeviceEventEmitter, Platform } from 'react-native';
 const { RNDFPInterstitial } = NativeModules
 
 const eventTypes = {
@@ -10,13 +10,12 @@ const eventTypes = {
 }
 let subscriptions = [];
 
-const interstitialEventEmitter = new NativeEventEmitter(RNDFPInterstitial);
+const interstitialEventEmitter = Platform.OS === 'ios' ? new NativeEventEmitter(RNDFPInterstitial) : DeviceEventEmitter;
 
 export default class Interstitial {
 
   constructor(adUnitId) {
     this.adUnitId = adUnitId;
-
     for (let i = 0, len = subscriptions.length; i < len; i++) {
       subscriptions[i].remove();
     }
