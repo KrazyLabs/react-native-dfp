@@ -2,11 +2,17 @@ package com.krazylabs.rnnativedfp;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 
@@ -19,7 +25,6 @@ public class RNDfpInterstitialAdModule extends ReactContextBaseJavaModule {
 
     PublisherInterstitialAd mPublisherInterstitialAd;
 
-
     @Override
     public String getName() {
         return REACT_CLASS;
@@ -28,7 +33,6 @@ public class RNDfpInterstitialAdModule extends ReactContextBaseJavaModule {
     public RNDfpInterstitialAdModule(ReactApplicationContext reactContext) {
         super(reactContext);
         mPublisherInterstitialAd = new PublisherInterstitialAd(reactContext);
-
     }
 
 
@@ -39,12 +43,11 @@ public class RNDfpInterstitialAdModule extends ReactContextBaseJavaModule {
             public void run () {
                 if (mPublisherInterstitialAd.getAdUnitId() == null) {
                     mPublisherInterstitialAd.setAdUnitId(adUnitID);
-                    mPublisherInterstitialAd.loadAd(new PublisherAdRequest.Builder().build());
                 }
+                mPublisherInterstitialAd.loadAd(new PublisherAdRequest.Builder().build());
+                addListeners();
             }
         });
-
-
     }
 
     @ReactMethod
@@ -54,11 +57,71 @@ public class RNDfpInterstitialAdModule extends ReactContextBaseJavaModule {
             public void run () {
                 if (mPublisherInterstitialAd.isLoaded()) {
                     mPublisherInterstitialAd.show();
-                } else {
-
                 }
             }
         });
+    }
+
+    private void addListeners() {
+        mPublisherInterstitialAd.setAdListener(new AdListener() {
+            ReactContext reactContext = getReactApplicationContext();
+            @Override
+            public void onAdLoaded() {
+                sendEvent(reactContext, "onAdLoaded", null);
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                WritableMap error = Arguments.createMap();
+                error.putString("error", mapErrorCode(errorCode));
+                sendEvent(reactContext, "onAdFailedToLoad", error);
+            }
+
+            @Override
+            public void onAdOpened() {
+                sendEvent(reactContext, "onAdOpened", null);
+            }
+
+            @Override
+            public void onAdClosed() {
+                sendEvent(reactContext, "onAdClosed", null);
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                sendEvent(reactContext, "onAdLeftApplication", null);
+            }
+        });
+    }
+
+    private void sendEvent(ReactContext reactContext,
+                            String eventName,
+                            @Nullable WritableMap params) {
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(eventName, params);
+    }
+
+    private String mapErrorCode(int errorCode) {
+        String errorMessage;
+        switch (errorCode) {
+            case PublisherAdRequest.ERROR_CODE_INTERNAL_ERROR:
+                errorMessage = "Internal error.";
+                break;
+            case PublisherAdRequest.ERROR_CODE_INVALID_REQUEST:
+                errorMessage = "Invalid request.";
+                break;
+            case PublisherAdRequest.ERROR_CODE_NETWORK_ERROR:
+                errorMessage = "Network error.";
+                break;
+            case PublisherAdRequest.ERROR_CODE_NO_FILL:
+                errorMessage = "No ad returned.";
+                break;
+            default:
+                errorMessage = "Unkown error.";
+                break;
+        }
+        return errorMessage;
     }
 
     @javax.annotation.Nullable

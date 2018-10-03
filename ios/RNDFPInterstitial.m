@@ -9,6 +9,9 @@
 #import "RNDFPInterstitial.h"
 
 @implementation RNDFPInterstitial
+{
+  bool hasListeners;
+}
 
 - (dispatch_queue_t)methodQueue
 {
@@ -20,8 +23,8 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_METHOD(loadAdFromAdUnitId: (NSString *)adUnitId)
 {
     NSLog(@"Loading Interstitial ad...");
-    self.interstitial.delegate = self;
     self.interstitial = [[DFPInterstitial alloc] initWithAdUnitID:adUnitId];
+    self.interstitial.delegate = self;
     [self.interstitial loadRequest:[DFPRequest request]];
 }
 
@@ -37,5 +40,48 @@ RCT_EXPORT_METHOD(showAd)
         NSLog(@"Interstitial Ad wasn't ready");
     }
 }
+
+- (NSArray<NSString *> *)supportedEvents {
+  return @[@"onAdLoaded", @"onAdFailedToLoad", @"onAdOpened", @"onAdClosed", @"onAdLeftApplication"];
+}
+
+-(void)startObserving {
+    hasListeners = YES;
+}
+
+-(void)stopObserving {
+    hasListeners = NO;
+}
+
+- (void)interstitialDidReceiveAd:(DFPInterstitial *)ad {
+    if (hasListeners) {
+        [self sendEventWithName:@"onAdLoaded" body:@{}];
+    }
+}
+
+- (void)interstitial:(DFPInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {
+    if (hasListeners) {
+        [self sendEventWithName:@"onAdFailedToLoad" body:@{@"error": [error localizedDescription]}];
+    }
+}
+
+- (void)interstitialWillPresentScreen:(DFPInterstitial *)ad {
+    if (hasListeners) {
+        [self sendEventWithName:@"onAdOpened" body:@{}];
+    }
+}
+
+- (void)interstitialDidDismissScreen:(DFPInterstitial *)ad {
+    if (hasListeners) {
+        [self sendEventWithName:@"onAdClosed" body:@{}];
+    }
+}
+
+- (void)interstitialWillLeaveApplication:(DFPInterstitial *)ad {
+    if (hasListeners) {
+        [self sendEventWithName:@"onAdLeftApplication" body:@{}];
+    }
+}
+
 
 @end
