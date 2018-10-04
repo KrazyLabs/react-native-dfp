@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Platform,
   requireNativeComponent,
   View,
 } from 'react-native';
@@ -103,7 +104,7 @@ DFPBanner.propTypes = {
   customTargeting: PropTypes.shape({
     amzn_b: PropTypes.string,
     amzn_h: PropTypes.string,
-    amznp: PropTypes.string,
+    amznp: Platform.OS === 'ios' ? PropTypes.array : PropTypes.string,
     amznslots: PropTypes.string
   }),
 
