@@ -14,8 +14,9 @@ const interstitialEventEmitter = Platform.OS === 'ios' ? new NativeEventEmitter(
 
 export default class Interstitial {
 
-  constructor(adUnitId) {
+  constructor(adUnitId, customTargeting) {
     this.adUnitId = adUnitId;
+    this.customTargeting = customTargeting;
     for (let i = 0, len = subscriptions.length; i < len; i++) {
       subscriptions[i].remove();
     }
@@ -27,7 +28,7 @@ export default class Interstitial {
    * @returns {*}
    */
   loadAd() {
-    RNDFPInterstitial.loadAdFromAdUnitId(this.adUnitId);
+    RNDFPInterstitial.loadAdFromAdUnitId(this.adUnitId, this.customTargeting);
   }
 
   /**

@@ -8,6 +8,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -16,6 +18,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,14 +40,26 @@ public class RNDfpInterstitialAdModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void loadAdFromAdUnitId(final String adUnitID) {
+    public void loadAdFromAdUnitId(final String adUnitID, final ReadableMap customTargeting) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run () {
                 if (mPublisherInterstitialAd.getAdUnitId() == null) {
                     mPublisherInterstitialAd.setAdUnitId(adUnitID);
                 }
-                mPublisherInterstitialAd.loadAd(new PublisherAdRequest.Builder().build());
+
+                // Add APS custom targeting
+                PublisherAdRequest.Builder adRequestBuilder = new PublisherAdRequest.Builder();
+                ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
+
+                while (iterator.hasNextKey()) {
+                    String key = iterator.nextKey();
+                    String value = customTargeting.getString(key);
+                    adRequestBuilder.addCustomTargeting(key, value);
+                }
+
+                final PublisherAdRequest adRequest = adRequestBuilder.build();
+                mPublisherInterstitialAd.loadAd(adRequest);
                 addListeners();
             }
         });

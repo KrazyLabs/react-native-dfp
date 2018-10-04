@@ -20,12 +20,14 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(loadAdFromAdUnitId: (NSString *)adUnitId)
+RCT_EXPORT_METHOD(loadAdFromAdUnitId:(NSString *)adUnitId customTargeting:(NSDictionary *)customTargeting)
 {
     NSLog(@"Loading Interstitial ad...");
     self.interstitial = [[DFPInterstitial alloc] initWithAdUnitID:adUnitId];
     self.interstitial.delegate = self;
-    [self.interstitial loadRequest:[DFPRequest request]];
+    DFPRequest *request = [DFPRequest request];
+    request.customTargeting = customTargeting;
+    [self.interstitial loadRequest:request];
 }
 
 RCT_EXPORT_METHOD(showAd)
@@ -82,6 +84,5 @@ RCT_EXPORT_METHOD(showAd)
         [self sendEventWithName:@"onAdLeftApplication" body:@{}];
     }
 }
-
 
 @end
