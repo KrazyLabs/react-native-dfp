@@ -1,9 +1,2 @@
-
-import {
-  NativeModules,
-} from 'react-native';
-
-import Banner from './RNDFPBanner';
-import Interstitial from './RNDFPInterstitial';
-
-module.exports = { Banner, Interstitial };
+export { default as Banner } from './RNDFPBanner';
+export { default as Interstitial } from './RNDFPInterstitial';
