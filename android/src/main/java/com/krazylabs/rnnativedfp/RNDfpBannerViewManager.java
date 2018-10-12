@@ -37,11 +37,6 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
   public static final String PROP_TEST_DEVICE_ID = "testDeviceID";
   public static final String PROP_CUSTOM_TARGETING = "customTargeting";
 
-  public static final String CUSTOM_TARGETING_AMZN_B = "amzn_b";
-  public static final String CUSTOM_TARGETING_AMZN_H = "amzn_h";
-  public static final String CUSTOM_TARGETING_AMZNP = "amznp";
-  public static final String CUSTOM_TARGETING_AMZNSLOTS = "amznslots";
-
   public static final String WIDTH = "width";
   public static final String HEIGHT = "height";
 
@@ -264,7 +259,7 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
 
   @ReactProp(name = PROP_AD_UNIT_ID)
   public void setAdUnitID(final ReactViewGroup view, final String adUnitID) {
-    if (adUnitID != null && this.adUnitID != adUnitID) {
+    if (adUnitID != null && !adUnitID.equals(this.adUnitID)) {
       this.adUnitID = adUnitID;
       loadAd(view);
     }
@@ -280,7 +275,7 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
 
   @ReactProp(name = PROP_CUSTOM_TARGETING)
   public void setCustomTargeting(final ReactViewGroup view, final ReadableMap customTargeting) {
-    if (customTargeting != null && customTargeting.hasKey(CUSTOM_TARGETING_AMZN_B) && !customTargeting.isNull(CUSTOM_TARGETING_AMZN_B) && customTargeting.hasKey(CUSTOM_TARGETING_AMZN_H) && !customTargeting.isNull(CUSTOM_TARGETING_AMZN_H) && customTargeting.hasKey(CUSTOM_TARGETING_AMZNP) && !customTargeting.isNull(CUSTOM_TARGETING_AMZNP) && customTargeting.hasKey(CUSTOM_TARGETING_AMZNSLOTS) && !customTargeting.isNull(CUSTOM_TARGETING_AMZNSLOTS)) {
+    if (customTargeting != null && this.customTargeting != customTargeting) {
       this.customTargeting = customTargeting;
       loadAd(view);
     }
@@ -293,9 +288,9 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
       adView.setAdSizes(adSizes);
     }
 
-    if (adView.getAdSizes() != null && adUnitID != null && customTargeting != null) {
+    if (adView.getAdSizes() != null && adUnitID != null) {
 
-      if (adUnitID != adView.getAdUnitId()) {
+      if (adView.getAdUnitId() == null) {
         adView.setAdUnitId(adUnitID);
       }
 
@@ -308,15 +303,16 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
         }
       }
 
-      // Add APS custom targeting
-      ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
+      if (customTargeting != null) {
+        // Add APS custom targeting
+        ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
 
-      while (iterator.hasNextKey()) {
-        String key = iterator.nextKey();
-        String value = customTargeting.getString(key);
-        adRequestBuilder.addCustomTargeting(key, value);
+        while (iterator.hasNextKey()) {
+          String key = iterator.nextKey();
+          String value = customTargeting.getString(key);
+          adRequestBuilder.addCustomTargeting(key, value);
+        }
       }
-
 
       final PublisherAdRequest adRequest = adRequestBuilder.build();
       adView.loadAd(adRequest);
