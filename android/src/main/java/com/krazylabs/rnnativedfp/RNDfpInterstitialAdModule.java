@@ -47,17 +47,19 @@ public class RNDfpInterstitialAdModule extends ReactContextBaseJavaModule {
                 if (mPublisherInterstitialAd.getAdUnitId() == null) {
                     mPublisherInterstitialAd.setAdUnitId(adUnitID);
                 }
+                
+                PublisherAdRequest.Builder adRequestBuilder = new PublisherAdRequest.Builder();
 
                 // Add APS custom targeting
-                PublisherAdRequest.Builder adRequestBuilder = new PublisherAdRequest.Builder();
-                ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
-
-                while (iterator.hasNextKey()) {
-                    String key = iterator.nextKey();
-                    String value = customTargeting.getString(key);
-                    adRequestBuilder.addCustomTargeting(key, value);
+                if (customTargeting != null) {
+                    ReadableMapKeySetIterator iterator = customTargeting.keySetIterator();
+                    while (iterator.hasNextKey()) {
+                        String key = iterator.nextKey();
+                        String value = customTargeting.getString(key);
+                        adRequestBuilder.addCustomTargeting(key, value);
+                    }
                 }
-
+                    
                 final PublisherAdRequest adRequest = adRequestBuilder.build();
                 mPublisherInterstitialAd.loadAd(adRequest);
                 addListeners();
