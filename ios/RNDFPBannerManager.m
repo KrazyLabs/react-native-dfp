@@ -29,7 +29,7 @@ RCT_EXPORT_VIEW_PROPERTY(testDeviceID, NSString);
 RCT_EXPORT_VIEW_PROPERTY(customTargeting, NSDictionary);
 
 RCT_EXPORT_VIEW_PROPERTY(onSizeChange, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdmobDispatchAppEvent, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdViewEvent, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAdViewDidReceiveAd, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDidFailToReceiveAdWithError, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAdViewWillPresentScreen, RCTBubblingEventBlock)

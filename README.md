@@ -63,7 +63,7 @@ import { RNBanner } from 'react-native-dfp';
   onAdViewWillDismissScreen={this.props.adViewWillDismissScreen}
   onAdViewDidDismissScreen={this.props.adViewDidDismissScreen}
   onAdViewWillLeaveApplication={this.props.adViewWillLeaveApplication}
-  onAdmobDispatchAppEvent={(event) => admobDispatchAppEvent(event)}
+  onAdViewEvent={(event) => admobDispatchAppEvent(event)}
   testDeviceID={testDeviceID}
   adUnitID={adUnitID}
   dimensions={dimensions}

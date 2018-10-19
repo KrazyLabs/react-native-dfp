@@ -53,7 +53,7 @@ public class RNDfpBannerViewManager extends SimpleViewManager<ReactViewGroup> im
     EVENT_WILL_DISMISS("onAdViewWillDismissScreen"),
     EVENT_DID_DISMISS("onAdViewDidDismissScreen"),
     EVENT_WILL_LEAVE_APP("onAdViewWillLeaveApplication"),
-    EVENT_ADMOB_EVENT_RECEIVED("onAdmobDispatchAppEvent");
+    EVENT_ADMOB_EVENT_RECEIVED("onAdViewEvent");
 
     private final String mName;
 

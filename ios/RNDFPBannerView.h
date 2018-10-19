@@ -20,7 +20,7 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onWillChangeAdSizeTo;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onSizeChange;
-@property (nonatomic, copy) RCTBubblingEventBlock onAdmobDispatchAppEvent;
+@property (nonatomic, copy) RCTBubblingEventBlock onAdViewEvent;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewDidReceiveAd;
 @property (nonatomic, copy) RCTBubblingEventBlock onDidFailToReceiveAdWithError;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewWillPresentScreen;

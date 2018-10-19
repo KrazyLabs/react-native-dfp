@@ -155,8 +155,8 @@ didReceiveAppEvent:(NSString *)name
     NSLog(@"Received app event (%@, %@)", name, info);
     NSMutableDictionary *myDictionary = [[NSMutableDictionary alloc] init];
     myDictionary[name] = info;
-    if (self.onAdmobDispatchAppEvent) {
-        self.onAdmobDispatchAppEvent(@{ name: info });
+    if (self.onAdViewEvent) {
+        self.onAdViewEvent(@{ name: info });
     }
 }
 
