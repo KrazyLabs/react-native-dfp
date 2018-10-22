@@ -13,12 +13,14 @@ RCT_EXPORT_MODULE();
 
 - (UIView *)view
 {
-    return [[RNDFPBannerView alloc] init];
+  RNDFPBannerView *bannerView = [[RNDFPBannerView alloc] init];
+  bannerView.hasSetCustomTargeting = NO;
+  return bannerView;
 }
 
 - (dispatch_queue_t)methodQueue
 {
-    return dispatch_get_main_queue();
+  return dispatch_get_main_queue();
 }
 
 RCT_EXPORT_VIEW_PROPERTY(adSizes, NSArray);
@@ -28,13 +30,13 @@ RCT_EXPORT_VIEW_PROPERTY(adUnitID, NSString);
 RCT_EXPORT_VIEW_PROPERTY(testDeviceID, NSString);
 RCT_EXPORT_VIEW_PROPERTY(customTargeting, NSDictionary);
 
-RCT_EXPORT_VIEW_PROPERTY(onSizeChange, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdViewEvent, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdViewDidReceiveAd, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onDidFailToReceiveAdWithError, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdViewWillPresentScreen, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdViewWillDismissScreen, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdViewDidDismissScreen, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdViewWillLeaveApplication, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onSizeChange, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAdViewEvent, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAdViewDidReceiveAd, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAdViewDidFailToReceiveAd, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAdViewWillPresentScreen, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAdViewWillDismissScreen, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAdViewDidDismissScreen, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAdViewWillLeaveApplication, RCTBubblingEventBlock);
 
 @end

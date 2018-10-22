@@ -14,7 +14,6 @@ Unofficial fork from Simon Bugert's [react-native-admob](https://github.com/sbug
 
 ### Manual installation
 
-
 #### iOS
 
 1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
@@ -25,26 +24,19 @@ Unofficial fork from Simon Bugert's [react-native-admob](https://github.com/sbug
 #### Android
 
 1. Open up `android/app/src/main/java/[...]/MainActivity.java`
-  - Add `import com.krazylabs.rnnativedfp.RNDfpPackage;` to the imports at the top of the file
-  - Add `new RNDfpPackage()` to the list returned by the `getPackages()` method
+
+- Add `import com.krazylabs.rnnativedfp.RNDfpPackage;` to the imports at the top of the file
+- Add `new RNDfpPackage()` to the list returned by the `getPackages()` method
+
 2. Append the following lines to `android/settings.gradle`:
-  	```
-  	include ':react-native-dfp'
-  	project(':react-native-dfp').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-dfp/android')
-  	```
+   ```
+   include ':react-native-dfp'
+   project(':react-native-dfp').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-dfp/android')
+   ```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-  	```
-      compile project(':react-native-dfp')
-  	```
-
-#### Windows
-[Read it! :D](https://github.com/ReactWindows/react-native)
-
-1. In Visual Studio add the `RNDfp.sln` in `node_modules/react-native-dfp/windows/RNDfp.sln` folder to their solution, reference from their app.
-2. Open up your `MainPage.cs` app
-  - Add `using com.krazylabs.rnnativedfp.RNDfp;` to the usings at the top of the file
-  - Add `new RNDfpPackage()` to the `List<IReactPackage>` returned by the `Packages` method
-
+   ```
+     compile project(':react-native-dfp')
+   ```
 
 ## Usage
 
@@ -55,24 +47,24 @@ import { RNBanner } from 'react-native-dfp';
 
 // To display a banner
 <RNBanner
-  style={this.state.style}
-  onSizeChange={this.onSizeChange.bind(this)}
-  onAdViewDidReceiveAd={this.props.adViewDidReceiveAd}
-  onDidFailToReceiveAdWithError={(event) => didFailToReceiveAdWithError(event.nativeEvent.error)}
-  onAdViewWillPresentScreen={this.props.adViewWillPresentScreen}
-  onAdViewWillDismissScreen={this.props.adViewWillDismissScreen}
-  onAdViewDidDismissScreen={this.props.adViewDidDismissScreen}
-  onAdViewWillLeaveApplication={this.props.adViewWillLeaveApplication}
-  onAdViewEvent={(event) => admobDispatchAppEvent(event)}
+  style={{ width: 320, height: 50 }}
+  onAdViewDidReceiveAd={() => {}}
+  onAdViewDidFailToReceiveAd={error => {}}
+  onAdViewWillPresentScreen={() => {}}
+  onAdViewWillDismissScreen={() => {}}
+  onAdViewDidDismissScreen={() => {}}
+  onAdViewWillLeaveApplication={() => {}}
+  onAdViewEvent={event => {}}
   testDeviceID={testDeviceID}
   adUnitID={adUnitID}
   dimensions={dimensions}
   customTargeting={customTargeting}
-  bannerSize={bannerSize} />
-
+  bannerSize={bannerSize}
+/>;
 ```
 
 #### Properties:
+
 ```
 /**
  * DFP library banner size constants
@@ -120,13 +112,13 @@ testDeviceID: React.PropTypes.string,
 /**
  * DFP iOS (?) library events
  */
-adViewDidReceiveAd: React.PropTypes.func,
-didFailToReceiveAdWithError: React.PropTypes.func,
-adViewWillPresentScreen: React.PropTypes.func,
-adViewWillDismissScreen: React.PropTypes.func,
-adViewDidDismissScreen: React.PropTypes.func,
-adViewWillLeaveApplication: React.PropTypes.func,
-admobDispatchAppEvent: React.PropTypes.func,
+onAdViewDidReceiveAd: PropTypes.func,
+onAdViewDidFailToReceiveAd: PropTypes.func,
+onAdViewWillPresentScreen: PropTypes.func,
+onAdViewWillDismissScreen: PropTypes.func,
+onAdViewDidDismissScreen: PropTypes.func,
+onAdViewWillLeaveApplication: PropTypes.func,
+onAdViewEvent: PropTypes.func,
 ```
 
 ### Display an Interstitial

@@ -16,13 +16,13 @@
 @property (nonatomic, copy) NSString *adUnitID;
 @property (nonatomic, copy) NSString *testDeviceID;
 @property (nonatomic, copy) NSDictionary *customTargeting;
+@property (nonatomic, assign) BOOL hasSetCustomTargeting;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onWillChangeAdSizeTo;
-
 @property (nonatomic, copy) RCTBubblingEventBlock onSizeChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewEvent;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewDidReceiveAd;
-@property (nonatomic, copy) RCTBubblingEventBlock onDidFailToReceiveAdWithError;
+@property (nonatomic, copy) RCTBubblingEventBlock onAdViewDidFailToReceiveAd;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewWillPresentScreen;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewWillDismissScreen;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdViewDidDismissScreen;

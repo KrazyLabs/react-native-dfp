@@ -11,23 +11,20 @@ const RNBanner = requireNativeComponent('RNDFPBanner', DFPBanner);
 
 export default class DFPBanner extends React.Component {
   state = {
-    style: {},
+    height: null,
+    width: null,
   };
 
   onSizeChange = ({ nativeEvent }) => {
-    const { height, width } = nativeEvent;
-    this.setState({ style: { width, height } });
-  };
-
-  onAdViewEvent = event => {
-    if (this.props.onAdViewEvent) {
-      this.props.onAdViewEvent(event);
+    if (this.props.onSizeChange) {
+      const { height, width } = nativeEvent;
+      this.setState({ height, width });
     }
   };
 
-  onDidFailToReceiveAdWithError = ({ nativeEvent }) => {
-    if (this.props.onDidFailToReceiveAdWithError) {
-      this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
+  onAdViewDidFailToReceiveAd = ({ nativeEvent }) => {
+    if (this.props.onAdViewDidFailToReceiveAd) {
+      this.props.onAdViewDidFailToReceiveAd(nativeEvent.error);
     }
   };
 
@@ -39,6 +36,10 @@ export default class DFPBanner extends React.Component {
       customTargeting,
       style,
     } = this.props;
+
+    const width = this.state.width || this.props.style.width;
+    const height = this.state.height || this.props.style.height;
+
     let { bannerSize, adSizes } = this.props;
 
     // Dimensions gets highest priority
@@ -61,23 +62,25 @@ export default class DFPBanner extends React.Component {
       bannerSize = 'smartBannerPortrait';
     }
 
+    console.log({ style, width, height });
+
     return (
       <View style={style}>
         <RNBanner
+          style={{ width, height }}
           bannerSize={bannerSize}
-          style={this.state.style}
-          onSizeChange={this.onSizeChange}
-          onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}
-          onDidFailToReceiveAdWithError={this.onDidFailToReceiveAdWithError}
-          onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen}
-          onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen}
-          onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen}
-          onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication}
-          onAdViewEvent={this.onAdViewEvent}
           adSizes={adSizes}
           dimensions={dimensions}
           testDeviceID={testDeviceID}
           adUnitID={adUnitID}
+          onSizeChange={this.onSizeChange}
+          onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}
+          onAdViewDidFailToReceiveAd={this.onAdViewDidFailToReceiveAd}
+          onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen}
+          onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen}
+          onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen}
+          onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication}
+          onAdViewEvent={this.props.onAdViewEvent}
           customTargeting={customTargeting}
         />
       </View>
@@ -141,7 +144,7 @@ DFPBanner.propTypes = {
    * Mobile ads iOS library events
    */
   onAdViewDidReceiveAd: PropTypes.func,
-  onDidFailToReceiveAdWithError: PropTypes.func,
+  onAdViewDidFailToReceiveAd: PropTypes.func,
   onAdViewWillPresentScreen: PropTypes.func,
   onAdViewWillDismissScreen: PropTypes.func,
   onAdViewDidDismissScreen: PropTypes.func,
@@ -151,6 +154,11 @@ DFPBanner.propTypes = {
 };
 
 DFPBanner.defaultProps = {
-  onDidFailToReceiveAdWithError: () => {},
+  onAdViewDidReceiveAd: () => {},
+  onAdViewDidFailToReceiveAd: () => {},
+  onAdViewWillPresentScreen: () => {},
+  onAdViewWillDismissScreen: () => {},
+  onAdViewDidDismissScreen: () => {},
+  onAdViewWillLeaveApplication: () => {},
   onAdViewEvent: () => {},
 };
